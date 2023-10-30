@@ -1,8 +1,8 @@
 {
-  "name": "masteroffire",
+  "name": "delivery",
   "version": "0.1.0",
   "bin": {
-    "masteroffire": "bin/masteroffire.js"
+    "delivery": "bin/delivery.js"
   },
   "scripts": {
     "build": "tsc",
