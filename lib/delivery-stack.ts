@@ -11,11 +11,11 @@ export class DeliVeryStack extends cdk.Stack {
     super(scope, id, props);
 
     // Define the custom domain in Route 53 and the associated SSL certificate from ACM
-    const customDomain = 'themasterofire.com';
+    const customDomain = 'themasteroffire.com';
     const certificate = acm.Certificate.fromCertificateArn(
       this,
       'Certificate',
-      'arn:aws:acm:ap-southeast-2:187922044747:certificate/fd8ac82a-68d9-45da-8d38-042a03ed96fa'
+      'arn:aws:acm:us-east-1:187922044747:certificate/467258e1-1946-48f1-adfc-2fa1c08b0445'
     );
 
     // Create an S3 bucket to host the website static files.
