@@ -50,8 +50,11 @@ export class DeliVeryStack extends cdk.Stack {
     // The ID of the existing hosted zone
     const existingHostedZoneId = 'Z02265453VRDKVENQDAL1';  // To be placed in ParameterStore 
 
-    // Use the hosted zone ID to reference the existing hosted zone
-    const hostedZone = route53.HostedZone.fromHostedZoneId(this, 'CustomDomainHostedZone', existingHostedZoneId);
+    // Use fromHostedZoneAttributes to reference the existing hosted zone
+    const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'CustomDomainHostedZone', {
+      zoneName: customDomain,
+      hostedZoneId: existingHostedZoneId,
+    });
 
     // Define the CNAME record
     new route53.CnameRecord(this, 'CustomDomainCNAME', {
