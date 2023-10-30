@@ -59,7 +59,7 @@ export class DeliVeryStack extends cdk.Stack {
     // Define the CNAME record
     new route53.CnameRecord(this, 'CustomDomainCNAME', {
       zone: hostedZone,
-      recordName: '',
+      recordName: 'www',
       domainName: distribution.distributionDomainName,
     });
   }
