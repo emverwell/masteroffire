@@ -37,6 +37,7 @@ export class DeliVeryStack extends cdk.Stack {
         origin: new origins.S3Origin(websiteBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
+      minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
       domainNames: [customDomain], // Associate custom domain
       certificate: certificate, // Use SSL certificate
       defaultRootObject: 'index.html', // Default page
