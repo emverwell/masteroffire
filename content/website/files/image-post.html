@@ -17,116 +17,15 @@
 </head>
 
 <body>
-	<header class="vincent_header">
-		<div class="row ">
-			<div class="col col-3 vincent_header_left">
-				<div class="vincent_inner">
-					<div class="vincent_inner_h_contact">
-						<div class="vincent_h_phone">+1 215 456 15 15</div>
-						<div class="vincent_h_wh">8:00 am – 11:30 pm</div>
-					</div>	
-				</div>
-			</div>			
-			<div class="col col-6 vincent_header_center">
-				<div class="vincent_def_header">
-					<div class="vincent_logo_cont">
-						<a href="index.html" class="vincent_image_logo">                        
-						</a>
-					</div>
-					<nav class="vincent_menu_cont">
-						<ul id="menu-main-menu" class="vincent_menu">
-							<li class="menu-item menu-item-has-children"><a href="#">Home</a>
-								<ul class="sub-menu">
-									<li class="menu-item"><a href="index.html">Home 1</a></li>
-									<li class="menu-item"><a href="home2.html">Home 2</a></li>
-									<li class="menu-item"><a href="home3.html">Home 3</a></li>
-									<li class="menu-item"><a href="home4.html">Home 4</a></li>																
-									<li class="menu-item"><a href="home5.html">Home 5</a></li>							
-									<li class="menu-item"><a href="home6.html">Home 6</a></li>
-								</ul>
-							</li>
-							<li class="menu-item menu-item-has-children"><a href="#">Menu</a>
-								<ul class="sub-menu">
-									<li class="menu-item"><a href="menu1.html">Menu 1</a></li>
-									<li class="menu-item"><a href="menu2.html">Menu 2</a></li>
-									<li class="menu-item"><a href="menu3.html">Menu 3</a></li>
-								</ul>
-							</li>
-							<li class=" menu-item menu-item-has-children"><a href="#">Features</a>
-								<ul class="sub-menu">
-									<li class="menu-item "><a href="typography.html">Typography</a></li>
-									<li class="menu-item"><a href="fullscreen-gallery.html">Fullscreen Gallery</a></li>
-									<li class="menu-item"><a href="404.html">Error 404 Page</a></li>					
-								</ul>
-							</li>
-							<li class="menu-item menu-item-has-children"><a href="#">About</a>
-								<ul class="sub-menu">
-									<li class="menu-item"><a href="about1.html">About 1</a></li>
-									<li class="menu-item"><a href="about2.html">About 2</a></li>
-									<li class="menu-item"><a href="team.html">Team</a></li>
-								</ul>
-							</li>	
-							<li class="menu-item active menu-item-has-children"><a href="#">Blog</a>
-								<ul class="sub-menu">							
-									<li class="menu-item"><a href="blog-fullscreen.html">Blog Fullscreen</a></li>
-									<li class="menu-item"><a href="blog-grid.html">Blog Grid</a></li>
-									<li class="menu-item"><a href="blog-standard.html">Blog Standard</a></li>
-									<li class="menu-item menu-item-has-children"><a href="#">Single Pages<i class="fa fa-angle-right" aria-hidden="true"></i></a>
-										<ul class=" sub-menu1">
-											<li class="menu-item"><a href="standard-post.html">Standard Post</a></li>
-											<li class="menu-item vincent_sub_menu_active"><a href="image-post.html">Image Post</a></li>
-											<li class="menu-item"><a href="video-post.html">Video Post</a></li>
-											<li class="menu-item"><a href="audio-post.html">Audio Post</a></li>
-											<li class="menu-item"><a href="qoute-post.html">Quote Post</a></li>
-											<li class="menu-item"><a href="link-post.html">Link Post</a></li>
-										</ul>
-									</li>
-								</ul>
-							</li>
-							<li class="menu-item menu-item-has-children"><a href="#">Shop</a>
-								<ul class="sub-menu">
-									<li class="menu-item"><a href="product-listing.html">Product Listing</a></li>
-									<li class="menu-item"><a href="single-product.html">Single Product</a></li>
-									<li class="menu-item"><a href="cart.html">Cart</a></li>
-									<li class="menu-item"><a href="checkout.html">Checkout</a></li>						
-								</ul>
-							</li>						
-							<li class="menu-item menu-item-has-children"><a href="#">Contact</a>
-								<ul class="sub-menu">
-									<li class="menu-item"><a href="contact-w-sidebar.html">Contact with Sidebar</a></li>
-									<li class="menu-item"><a href="contact-w-gallery.html">Contact with Gallery</a></li>
-									<li class="menu-item"><a href="contact-multiple-maps.html">With Multiple Maps</a></li>
-								</ul>
-							</li>
-						</ul>
-					</nav>
-
-					<div class="clear"></div>
-				</div>
-
-				<div class="mobile_header ">
-					<a href="index.html" class="vincent_image_logo"></a>
-					<a href="javascript:void(0)" class="btn_mobile_menu">
-						<span class="vincent_menu_line1"></span>
-						<span class="vincent_menu_line2"></span>
-						<span class="vincent_menu_line3"></span>
-					</a>
-				</div>
-				
-			</div>
-			<div class="col col-3 vincent_header_right">
-				<div class="vincent_inner">
-					<a href="cart.html">
-						<div class="vincent_shopping_cart">
-							<div class="vincent_total_price">$0.00</div>
-							<div class="vincent_total_items">0 items - View Cart</div>
-							<div class="vincent_cart_item_counter">0</div>
-						</div>
-					</a>
-				</div>
-			</div>
-		</div>			
-	</header>
+	<header class="vincent_header" id="menu-header"></header>
+	<script>
+		// Using a common header
+		fetch("menu-header.html")
+			.then(response => response.text())
+			.then(data => {
+				document.getElementById("menu-header").innerHTML = data;
+			});
+	</script>
 	<div class="vincent_title_block vincent_corners">
 		<div class="vincent_inner_text">
 			<h1>Image POST</h1>
@@ -157,11 +56,55 @@
 								</div>
 							</div>
 						</div>								
-						<p >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere bibendum mauris, nec porttitor mauris hendrerit ut. Nulla sit amet pharetra enim, eu porttitor dolor. Nulla id sem a mi egestas molestie sit amet sit amet nibh. Ut elit velit, commodo maximus tellus efficitur, consectetur interdum risus. Vivamus euismod magna ac fermentum interdum. Nunc bibendum sapien eu urna iaculis, in placerat erat tristique. Proin nec maximus libero. Sed ultrices magna ut erat sollicitudin, vitae commodo elit vulputate.</p>
-						<p>Suspendisse nec dictum nisi. Fusce facilisis arcu at dolor maximus, eget tempus massa egestas. Aenean non maximus arcu. Morbi at lectus vitae augue pellentesque aliquam nec vitae elit. Pellentesque at purus vitae tortor feugiat placerat. Quisque pretium ante eget mollis tempus. Maecenas porta imperdiet quam, sit amet dapibus diam condimentum et. Morbi viverra lectus ut aliquet semper. Nunc leo felis, scelerisque non hendrerit sed, consequat sed tellus.</p>
-						<p>Quisque vestibulum, nisl vitae rhoncus luctus, est leo dictum erat, sit amet molestie felis lorem a est. Praesent velit sapien, tincidunt lobortis sapien quis, feugiat sagittis dui. Quisque semper malesuada velit, sed gravida lorem consequat ac. Sed vitae ex leo. Aenean lacinia neque in lacus vulputate, eu ullamcorper tortor luctus. Mauris auctor tempor hendrerit. Phasellus elementum nec tellus quis viverra. Sed nec condimentum risus, ac ultricies lectus.</p>
-						<p>Vivamus sed massa imperdiet lectus auctor fermentum. Duis ultrices faucibus porttitor. Quisque elit ex, convallis quis metus vitae, facilisis lobortis dolor. In interdum hendrerit eros, id euismod orci blandit vulputate. Morbi ullamcorper gravida metus. Duis interdum, nisi et molestie ornare, ligula eros sollicitudin eros, ut molestie magna tortor gravida sapien. Cras lobortis elementum congue. Quisque pharetra dictum diam, ac vestibulum lorem hendrerit sit amet.</p>
 
+							<p><b>Buffalo Wings</b></p>
+							<p>To reheat: Preheat oven to 200°C/390°F. Remove the wrapping bag and spread wings out on tray, skin side up, and bake for 5 to 8 minutes or until the skin puffs up so the wrinkles smooth out and becomes crisp again.</p>
+							
+							<p>Toss in sauce: Transfer the wings into a large bowl. Pour over sauce and toss to coat. (Alternatively, serve wings plain with Buffalo Sauce for dipping).
+							</p>
+							
+							Mac n' Cheese:
+							Cooking instructions (from Fresh): 
+							
+							Preheat your oven to 180 degrees Celsius
+							
+							Remove the wrapping bag and cook the Mac n' Cheese for 25 minutes
+							
+							Increase oven temperature to 210 degrees Celsius and further cook the Mac n' Cheese for 5 - 10 minutes or until the top is golden
+							
+							Cooking instructions (from Frozen): 
+							
+							Preheat your oven to 180 degrees Celsius
+							
+							Remove the wrapping bag and cook the Mac n' Cheese for 45 minutes
+							
+							Increase oven temperature to 210 degrees Celsius and further cook Mac n' Cheese for 5 - 10 minutes or until the top is golden
+							
+							Allow the Mac n' Cheese to rest for 5 minutes before serving
+							
+							Brisket:
+							
+							Please note all reheating methods require you to keep the Brisket in the sealed bag it comes in.
+							
+							Before reheating, remove your brisket from the fridge and allow it to come to room temperature for about 45 minutes.
+							
+							Microwave
+							Place the sealed Brisket into the microwave for 2 minutes. Turn the package over and add 2 more minutes and allow the brisket to rest prior to serving (If it requires more heating, just add no more than one minute as a final heating round).
+							
+							Oven
+							Pre-heat your oven to 160 degrees.
+							
+							Fill a large, deep casserole dish or oven pan with warm water to the halfway point and place your sealed brisket into the dish or pan.
+							Heat the Brisket for 2 hours and 20 minutes. The internal temperature of the meat should read 75 degrees Celsius and above
+							Remove the Brisket from the oven and allow the brisket to rest prior to serving.
+							
+							Garlic Butter Corn
+							
+							Microwave
+							Place the sealed Corn into the microwave for 2 minutes. Turn the package over and add 2 more minutes and allow the Corn to rest prior to serving (If it requires more heating, just add no more than one minute as a final heating round).
+							
+							Oven
+							Preheat oven to 160°C/320°F. Remove the wrapping bag and place the Corn out on a tray, and bake for 10 to 15 minutes and allow the Corn to rest prior to serving.						
 
 						<div class="vincent_post_tags">
 							<span>TAGS: </span><a href="category.html">Food</a>, <a href="category.html">Restaurant</a>, <a href="category.html">VINCENT</a>
@@ -335,33 +278,15 @@
 		</div>
 	</div>
 	<div class="vincent_back_to_top"></div>
-	<footer>
-		<div class="vincent_container">
-			<div class="row">
-				<div class="col col-12">
-					<div class="vincent_logo_cont">
-						<a href="index.html" class="vincent_image_logo_footer">                        
-						</a>
-					</div>
-					<div class="vincent_foter_text">+1 215 456 15 15. <span>8:00 am – 11:30 pm</span></div>	
-					<ul class="vincent_foter_menu">
-						<li><a href="index.html">Home</a></li>
-						<li><a href="menu1.html">Menu</a></li>
-						<li><a href="fullscreen-gallery.html">Features</a></li>
-						<li><a href="about1.html">About</a></li>
-						<li><a href="blog-grid.html">Blog</a></li>
-						<li><a href="contact-multiple-maps.html">Contact</a></li>
-					</ul>
-					<ul class="vincent_social">
-						<li><a href="https://twitter.com/"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-						<li><a href="https://www.facebook.com/"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-						<li><a href="https://www.instagram.com/"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-					</ul>
-					<div class="vincent_copy_text">Copyright © 2018 Vincent. All Rights Reserved.</div>
-				</div>
-			</div>
-		</div>
-	</footer>
+	<footer id="menu-footer"></footer>
+	<script>
+		// Using a common footer
+		fetch("menu-footer.html")
+			.then(response => response.text())
+			.then(data => {
+				document.getElementById("menu-footer").innerHTML = data;
+			});
+	</script>	
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/owl.carousel.min.js"></script>
 	<script src="js/index.js"></script>
