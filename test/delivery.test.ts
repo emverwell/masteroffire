@@ -1,13 +1,13 @@
 // import * as cdk from 'aws-cdk-lib';
 // import { Template } from 'aws-cdk-lib/assertions';
-// import * as Masteroffire from '../lib/masteroffire-stack';
+// import * as DeliVeryStack from '../lib/delivery-stack';
 
 // example test. To run these tests, uncomment this file along with the
-// example resource in lib/masteroffire-stack.ts
+// example resource in lib/delivery-stack.ts
 test('SQS Queue Created', () => {
 //   const app = new cdk.App();
 //     // WHEN
-//   const stack = new Masteroffire.MasteroffireStack(app, 'MyTestStack');
+//   const stack = new Delivery.DeliVeryStack(app, 'MyTestStack');
 //     // THEN
 //   const template = Template.fromStack(stack);
 
