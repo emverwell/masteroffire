@@ -197,12 +197,6 @@ export class DeliVeryStack extends cdk.Stack {
     // Add API Key to Usage Plan
     const usagePlan = api.addUsagePlan("DeliVeryUsagePlan", {
       name: "DeliVeryUsagePlan",
-      apiStages: [
-        {
-          api: api,
-          stage: api.deploymentStage,
-        },
-      ],
       throttle: {
         rateLimit: 500,
         burstLimit: 1000,
@@ -216,7 +210,6 @@ export class DeliVeryStack extends cdk.Stack {
     // Set environment variable for Lambda function
     const apiLambdaEnv = {
       PRODUCTS_TABLE_NAME: productsTable.tableName,
-      API_KEY: apiKey.keyId,
     };
 
     // Lambda function for API Gateway
@@ -236,17 +229,6 @@ export class DeliVeryStack extends cdk.Stack {
 
     // Add GET method to the /products resource
     const getProductsIntegration = new apiGateway.LambdaIntegration(apiLambda);
-    const userPoolAuthorizer = new apiGateway.CfnAuthorizer(
-      this,
-      "DeliVeryUserPoolAuthorizer",
-      {
-        name: "DeliVeryUserPoolAuthorizer",
-        restApiId: api.restApiId,
-        type: apiGateway.AuthorizationType.COGNITO,
-        identitySource: "method.request.header.Authorization",
-        providerArns: [userPool.userPoolArn],
-      }
-    );
 
     // Allow anonymous access to GET method
     productsResource.addMethod("GET", getProductsIntegration);
@@ -256,6 +238,10 @@ export class DeliVeryStack extends cdk.Stack {
 
     // Allow anonymous access to GET method for /products/{id}
     productByIdResource.addMethod("GET", getProductsIntegration);
+
+    usagePlan.addApiStage({
+      stage: api.deploymentStage,
+    });
 
     const localDnsName = `api.${customDomain}`;
     new cdk.CfnOutput(this, "ApiGatewayUrl", {
