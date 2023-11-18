@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+</head>
+<body>
+
+    <div id="result"></div>
+
+    <script>
+        async function fetchData() {
+            console.log('Fetching data...');
+            try {
+                const response = await fetch("https://app.themasteroffire.com/backend?destinationUrl=products", {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Access-Control-Allow-Origin": "*",    
+                        // Add any additional headers as needed
+                    },
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                console.log('Data received:', data);
+
+                // Display the data in the result div
+                document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error fetching data:', error.message);
+            }
+        }
+
+        console.log('Page loaded, calling fetchData...');
+        // Call the fetchData function when the page loads
+        window.onload = fetchData;
+    </script>
+
+</body>
+</html>

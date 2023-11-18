@@ -1,5 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
@@ -166,17 +167,17 @@ export class DeliVeryStack extends cdk.Stack {
         certificate: ApiGatewayCertificate,
       },
       deployOptions: {
-        cachingEnabled: true,
-        cacheDataEncrypted: true,
-        cacheClusterEnabled: true,
+        // cachingEnabled: true,
+        // cacheDataEncrypted: true,
+        // cacheClusterEnabled: true,
         dataTraceEnabled: true,
         methodOptions: {
           "/products/GET": {
             throttlingRateLimit: 10,
             throttlingBurstLimit: 10,
-            cacheDataEncrypted: true,
-            cachingEnabled: true,
-            cacheTtl: cdk.Duration.seconds(3600),
+            // cacheDataEncrypted: true,
+            // cachingEnabled: true,
+            // cacheTtl: cdk.Duration.seconds(3600),
           },
           "/products/{id}/GET": {
             throttlingRateLimit: 20,
@@ -212,7 +213,7 @@ export class DeliVeryStack extends cdk.Stack {
       PRODUCTS_TABLE_NAME: productsTable.tableName,
     };
 
-    // Lambda function for API Gateway
+    // Lambda function for serverless endpoints
     const apiLambda = new lambda.Function(this, "DELIVeryApiLambda", {
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: "products-handler.getProductsHandler",
@@ -230,17 +231,105 @@ export class DeliVeryStack extends cdk.Stack {
     // Add GET method to the /products resource
     const getProductsIntegration = new apiGateway.LambdaIntegration(apiLambda);
 
-    // Allow anonymous access to GET method
+    // Allow access to GET method
     productsResource.addMethod("GET", getProductsIntegration);
 
     // Define the API Gateway resource for /products/{id}
     const productByIdResource = productsResource.addResource("{id}");
 
-    // Allow anonymous access to GET method for /products/{id}
+    // Allow access to GET method for /products/{id}
     productByIdResource.addMethod("GET", getProductsIntegration);
 
     usagePlan.addApiStage({
       stage: api.deploymentStage,
+    });
+
+    // Define the API Gateway
+    const apiHandler = new apiGateway.RestApi(
+      this,
+      "DELIVeryApiHandlerGateway",
+      {
+        restApiName: "DELIVeryApiHandlerGateway",
+        description: "No-Cached Backend API",
+        domainName: {
+          domainName: "app." + customDomain,
+          certificate: ApiGatewayCertificate,
+        },
+        deployOptions: {
+          methodOptions: {
+            "/backend/GET": {
+              throttlingRateLimit: 100,
+              throttlingBurstLimit: 100,
+            },
+          },
+        },
+      }
+    );
+
+    // Lambda function for securely calling the endpoints
+    const apiLambdaHandler = new lambda.Function(
+      this,
+      "DELIVeryBackkendHandlerLambda",
+      {
+        runtime: lambda.Runtime.NODEJS_18_X,
+        handler: "backend-handler.callHandler",
+        code: lambda.Code.fromAsset("src/backend"),
+        environment: apiLambdaEnv,
+        timeout: cdk.Duration.seconds(60),
+        role: new iam.Role(this, "LambdaRole", {
+          assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+          // Attach policies to the Lambda function role
+          managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName(
+              "service-role/AWSLambdaBasicExecutionRole"
+            ),
+            iam.ManagedPolicy.fromAwsManagedPolicyName(
+              "SecretsManagerReadWrite"
+            ),
+          ],
+        }),
+      }
+    );
+
+    const backendResource = apiHandler.root.addResource("backend");
+
+    // Define integration response
+    const integrationResponse: apiGateway.IntegrationResponse = {
+      statusCode: '200',
+      responseParameters: {
+        'method.response.header.Access-Control-Allow-Origin': "'*'",
+        'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+      },
+    };    
+    
+    const backendLambdaIntegration = new apiGateway.LambdaIntegration(
+      apiLambdaHandler
+    );
+    // Allow anonymous access to GET method
+    backendResource.addMethod("GET", backendLambdaIntegration, {
+      apiKeyRequired: false,
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Access-Control-Allow-Headers': true,
+          },
+        },
+      ],
+    });      
+
+    // Enable CORS for the API Gateway method
+    backendResource.addCorsPreflight({
+      allowOrigins: apiGateway.Cors.ALL_ORIGINS,
+      allowMethods: ["GET", "OPTIONS"],
+      allowHeaders: [
+        "Content-Type",
+        "X-Amz-Date",
+        "Authorization",
+        "X-Api-Key",
+        "X-Amz-Security-Token",
+      ],
     });
 
     const localDnsName = `api.${customDomain}`;
@@ -250,6 +339,13 @@ export class DeliVeryStack extends cdk.Stack {
       exportName: "ApiGatewayUrl",
     });
 
+    const appDnsName = `app.${customDomain}`;
+    new cdk.CfnOutput(this, "AppUrl", {
+      value: `https://${appDnsName}`,
+      description: "URL for API Client Access",
+      exportName: "AppUrl",
+    });
+
     // Add ARecord target for API Gateway
     new cdk.aws_route53.ARecord(this, "APIARecord", {
       zone: hostedZone,
@@ -257,6 +353,15 @@ export class DeliVeryStack extends cdk.Stack {
         new cdk.aws_route53_targets.ApiGateway(api)
       ),
       recordName: localDnsName,
+    });
+
+    // Add ARecord target for API Gateway
+    new cdk.aws_route53.ARecord(this, "AppARecord", {
+      zone: hostedZone,
+      target: cdk.aws_route53.RecordTarget.fromAlias(
+        new cdk.aws_route53_targets.ApiGateway(apiHandler)
+      ),
+      recordName: appDnsName,
     });
   }
 }

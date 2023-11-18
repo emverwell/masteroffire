@@ -10,6 +10,7 @@ const logger = console;
 
 export const getProductsHandler = async (event: any): Promise<any> => {
   logger.info('getProductsHandler method initiated');
+
   const dynamoDB = new DynamoDBClient({ region: "ap-southeast-2" });
 
   // Check if there is an "id" parameter in the path
