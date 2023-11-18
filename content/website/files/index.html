@@ -14,18 +14,33 @@
 	<link rel="stylesheet" href="css/font-awesome.css">
 	<link rel="stylesheet" href="css/owl.carousel.min.css">
 	<link rel="stylesheet" href="css/style.css">
+
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-G8P8Z8MD55">
+	</script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'G-G8P8Z8MD55');
+	</script>	
 </head>
 
 <body class="vincent_home6 vincent_home1">
-	<header class="vincent_header" id="menu-header"></header>
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1498.0.min.js"></script>
+	<script src="/js/script/amazon-cognito-identity.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 	<script>
 		// Using a common header
 		fetch("menu-header.html")
-			.then(response => response.text())
-			.then(data => {
-				document.getElementById("menu-header").innerHTML = data;
-			});
+		.then(response => response.text())
+		.then(data => {
+			document.getElementById("menu-header").innerHTML = data;
+		});
 	</script>
+	<header class="vincent_header" id="menu-header"></header>
 	<div class="row">
 		<div class="col col-12 vincent_content vincent_corners">
 			<div class="owl-carousel vincent_slider1i vincent_slider_main ">
@@ -46,7 +61,7 @@
 							<h1>Master of Fire.</h1>
 							<h2>Smokin' rippa </h2>
 							<div class="vincent_slider_main_item_text">Grain Fed Boston Butt Pork </div>
-							<a class="vincent_button vincent_button_background" href="menu1.html">View Menu<i
+							<a class="vincent_button vincent_button_background" href="menu.html">View Menu<i
 									class="fa fa-angle-right" aria-hidden="true"></i></a>
 						</div>
 					</div>
@@ -60,7 +75,7 @@
 							<h1>Master of Fire.</h1>
 							<h2>Smokin' rippa </h2>
 							<div class="vincent_slider_main_item_text">Grain Fed Angus Beef Short Ribs </div>
-							<a class="vincent_button vincent_button_background" href="menu1.html">View Menu<i
+							<a class="vincent_button vincent_button_background" href="menu.html">View Menu<i
 									class="fa fa-angle-right" aria-hidden="true"></i></a>
 						</div>
 					</div>
@@ -74,7 +89,7 @@
 							<h2>Smokin' rippa </h2>
 							<h1>Master of Fire.</h1>
 							<div class="vincent_slider_main_item_text">Grass Fed Lamb Shoulder </div>
-							<a class="vincent_button vincent_button_background" href="menu1.html">View Menu<i
+							<a class="vincent_button vincent_button_background" href="menu.html">View Menu<i
 									class="fa fa-angle-right" aria-hidden="true"></i></a>
 						</div>
 					</div>
@@ -371,7 +386,7 @@
 								<h5 class="vincent_post_title">Reheating Instructions</h5>
 								<p class="vincent_post_excerpt"><b>Buffalo Wings</b>
 									To reheat: Preheat oven to 200°C/390°F. Remove the wrapping bag and spread wings out on tray, skin side up, and bake for 5 to 8 minutes or until the skin puffs up so...</p>
-								<a class="vincent_button vincent_button_background" href="image-post.html">Read More<i
+								<a class="vincent_button vincent_button_background" href="posts.html">Read More<i
 										class="fa fa-angle-right" aria-hidden="true"></i></a>
 							</div>
 						</div>
