@@ -119,12 +119,21 @@ export class DeliVeryStack extends cdk.Stack {
     });
 
     // DynamoDB Table for Products
-    const productsTable = new dynamoDB.Table(this, "ProductsTable", {
-      tableName: "products",
+    const productsTable = new dynamoDB.Table(this, "ProductTable", {
+      tableName: "product",
       partitionKey: { name: "id", type: dynamoDB.AttributeType.STRING },
-      sortKey: { name: "category", type: dynamoDB.AttributeType.STRING }, // Adding category as the sort key
       billingMode: dynamoDB.BillingMode.PAY_PER_REQUEST, // On-demand billing
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    // Add secondary indexes to productsTable
+    productsTable.addGlobalSecondaryIndex({
+      indexName: "category_index",
+      partitionKey: {
+        name: "category",
+        type: cdk.aws_dynamodb.AttributeType.STRING,
+      },
+      projectionType: cdk.aws_dynamodb.ProjectionType.ALL,
     });
 
     // Add secondary indexes to productsTable
@@ -137,6 +146,7 @@ export class DeliVeryStack extends cdk.Stack {
       projectionType: cdk.aws_dynamodb.ProjectionType.ALL,
     });
 
+    // Add secondary indexes to productsTable
     productsTable.addGlobalSecondaryIndex({
       indexName: "product_name_index",
       partitionKey: {
@@ -146,6 +156,7 @@ export class DeliVeryStack extends cdk.Stack {
       projectionType: cdk.aws_dynamodb.ProjectionType.ALL,
     });
 
+    // Add secondary indexes to productsTable
     productsTable.addGlobalSecondaryIndex({
       indexName: "active_index",
       partitionKey: {
@@ -155,13 +166,28 @@ export class DeliVeryStack extends cdk.Stack {
       projectionType: cdk.aws_dynamodb.ProjectionType.ALL,
     });
 
+    // DynamoDB Table for Subscribed Users
+    const subscribedEmail = new dynamoDB.Table(this, 'SubscribedEmailTable', {
+      tableName: 'subscribed_email',
+      billingMode: dynamoDB.BillingMode.PAY_PER_REQUEST, // On-demand billing
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      partitionKey: { name: 'email', type: dynamoDB.AttributeType.STRING },
+    });
+    
+    // Add a global secondary index for 'is_subscribed'
+    subscribedEmail.addGlobalSecondaryIndex({
+      indexName: 'is_subscribed_index',
+      partitionKey: { name: 'is_subscribed', type: dynamoDB.AttributeType.STRING },
+      projectionType: dynamoDB.ProjectionType.ALL,
+    });
+    
     // Define the API Gateway
     const api = new apiGateway.RestApi(this, "DELIVeryApiGateway", {
       restApiName: "DELIVeryApiGateway",
       description: "The DELIVery API Gateway",
-      endpointConfiguration: {
-        types: [apiGateway.EndpointType.EDGE],
-      },
+      // endpointConfiguration: {
+      //   types: [apiGateway.EndpointType.EDGE],
+      // },
       domainName: {
         domainName: "api." + customDomain,
         certificate: ApiGatewayCertificate,
@@ -175,16 +201,16 @@ export class DeliVeryStack extends cdk.Stack {
           "/products/GET": {
             throttlingRateLimit: 10,
             throttlingBurstLimit: 10,
-            // cacheDataEncrypted: true,
-            // cachingEnabled: true,
-            // cacheTtl: cdk.Duration.seconds(3600),
+            cacheDataEncrypted: true,
+            cachingEnabled: true,
+            cacheTtl: cdk.Duration.seconds(60),
           },
           "/products/{id}/GET": {
             throttlingRateLimit: 20,
             throttlingBurstLimit: 20,
-            cacheDataEncrypted: true,
-            cachingEnabled: true,
-            cacheTtl: cdk.Duration.seconds(60),
+            // cacheDataEncrypted: true,
+            cachingEnabled: false,
+            // cacheTtl: cdk.Duration.seconds(60),
           },
         },
       },
@@ -222,6 +248,7 @@ export class DeliVeryStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(60),
     });
 
+    
     // Grant access to the DynamoDB table for the Lambda function
     productsTable.grantReadData(apiLambda);
 
@@ -244,7 +271,29 @@ export class DeliVeryStack extends cdk.Stack {
       stage: api.deploymentStage,
     });
 
-    // Define the API Gateway
+    // Lambda Function for subscribe endpoint
+    const subscribeLambda = new lambda.Function(this, "SubscribeLambda", {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: "subscribe-handler.subscribeHandler",
+      code: lambda.Code.fromAsset("src/api"),
+      environment: {
+        SUBSCRIBED_EMAIL_TABLE_NAME: subscribedEmail.tableName,
+      },
+      timeout: cdk.Duration.seconds(60),
+    });
+
+    // Grant access to the DynamoDB table for the Lambda function
+    subscribedEmail.grantReadWriteData(subscribeLambda);
+
+    // Create the lambda integration for the API
+    const subscribeIntegration = new apiGateway.LambdaIntegration(subscribeLambda);
+
+    // Add POST Method from subscribeIntegration to API
+    api.root.addResource("subscribe").addMethod("POST", subscribeIntegration);
+
+    // BBF Sort of
+
+    // Define the Backend API Gateway
     const apiHandler = new apiGateway.RestApi(
       this,
       "DELIVeryApiHandlerGateway",
@@ -256,6 +305,7 @@ export class DeliVeryStack extends cdk.Stack {
           certificate: ApiGatewayCertificate,
         },
         deployOptions: {
+          cachingEnabled: false,
           methodOptions: {
             "/backend/GET": {
               throttlingRateLimit: 100,
@@ -291,33 +341,7 @@ export class DeliVeryStack extends cdk.Stack {
       }
     );
 
-    const backendResource = apiHandler.root.addResource("backend");
-
-    // Define integration response
-    const integrationResponse: apiGateway.IntegrationResponse = {
-      statusCode: '200',
-      responseParameters: {
-        'method.response.header.Access-Control-Allow-Origin': "'*'",
-        'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-      },
-    };    
-    
-    const backendLambdaIntegration = new apiGateway.LambdaIntegration(
-      apiLambdaHandler
-    );
-    // Allow anonymous access to GET method
-    backendResource.addMethod("GET", backendLambdaIntegration, {
-      apiKeyRequired: false,
-      methodResponses: [
-        {
-          statusCode: '200',
-          responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin': true,
-            'method.response.header.Access-Control-Allow-Headers': true,
-          },
-        },
-      ],
-    });      
+    const backendResource = apiHandler.root.addResource("{proxy+}");
 
     // Enable CORS for the API Gateway method
     backendResource.addCorsPreflight({
@@ -331,6 +355,34 @@ export class DeliVeryStack extends cdk.Stack {
         "X-Amz-Security-Token",
       ],
     });
+
+    const backendLambdaIntegration = new apiGateway.LambdaIntegration(
+      apiLambdaHandler,
+      {
+        proxy: true,
+      }
+    );
+    // Allow anonymous access to GET method
+    // Create a resource with a greedy path variable and ANY method
+    const backendMethod = backendResource.addMethod(
+      "ANY",
+      backendLambdaIntegration,
+      {
+        apiKeyRequired: false,
+        methodResponses: [
+          {
+            statusCode: "200",
+            responseParameters: {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+            },
+          },
+        ],
+        requestParameters: {
+          "method.request.path.any": true,
+        },
+      }
+    );
 
     const localDnsName = `api.${customDomain}`;
     new cdk.CfnOutput(this, "ApiGatewayUrl", {

@@ -28,16 +28,7 @@
 
 <body class="vincent_menu1">
 
-	<script>
-		// Using a common header
-		fetch("menu-header.html")
-			.then(response => response.text())
-			.then(data => {
-				document.getElementById("menu-header").innerHTML = data;
-			});
-	</script>
 	<header class="vincent_header" id="menu-header"></header>
-
 
 	<div class="vincent_title_block vincent_corners">
 		<div class="vincent_inner_text">
@@ -48,81 +39,26 @@
 	<div class="vincent_menu1_block">
 		<div class="vincent_container">
 			<div class="container">
-				<ul class="tabs vincent_menu_tabs">
-					<!-- Dynamically generate tabs based on product categories -->
-					<!-- You can fetch the unique product categories from your data -->
-					<li><a class="active" href="#first">Meats</a></li>
-					<!-- Add other tabs based on your categories -->
+				<ul class="tabs vincent_menu_tabs" id="menuTabs">
+					<li><a class="active" href="#meats">Meats</a></li>
+					<li><a href="#sides">Sides</a></li>
+					<li><a href="#combos">Combos</a></li>
+					<li><a href="#specials">Specials</a></li>
+					<li><a href="#giftcard">Gift Cards</a></li>
 				</ul>
-
-				<!-- Dynamically generate content based on product data -->
-				<div id="first">
-					<div class="row gutters" id="product-list">
-						<!-- Product items will be dynamically added here -->
-					</div>
-				</div>
-
-				<!-- Add other content sections based on your categories -->
-
+				<div id="meats"></div>
+				<div id="sides"></div>
+				<div id="combos"></div>
+				<div id="specials"></div>
+				<div id="giftcard"></div>
 			</div>
 		</div>
 	</div>
 
-
-
 	<div class="vincent_back_to_top"></div>
 	<footer id="menu-footer"></footer>
-	<script>
-		// Using a common footer
-		fetch("menu-footer.html")
-			.then(response => response.text())
-			.then(data => {
-				document.getElementById("menu-footer").innerHTML = data;
-			});
-
-		// Fetch data from the API endpoint
-		fetch("https://app.themasteroffire.com/backend?destinationUrl=products", {
-			method: 'GET',
-			// mode: 'cors',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-			.then(response => {
-				console.log('API Response:', response);
-				return response.json();
-			})
-			.then(data => {
-				console.log('Parsed JSON Data:', data);
-				// Process the fetched data and update the HTML
-				const productList = document.getElementById("product-list");
-
-				data.forEach(product => {
-					const productItem = document.createElement("div");
-					productItem.classList.add("col", "col-3", "vincent_menu1_block_item");
-
-					// Dynamically generate product HTML based on the fetched data
-					productItem.innerHTML = `
-                    <div class="vincent_prod_list_image_cont">
-                        <div class="vincent_prod_list_image_wrapper">
-                            <div class="vincent_team_overlay"></div>
-                            <img src="${product.product_data.img_url}" alt="">
-                            <a class="vincent_add_to_cart_button" href="product.html"></a>
-                        </div>
-                    </div>
-                    <h5><a href="product.html">${product.product_name}</a></h5>
-                    <p class="vincent_prod_list_text">${product.product_data.description}</p>
-                    <div class="vincent_prod_list_price"><span>${product.product_data.price}</span></div>
-                `;
-
-					// Append the product item to the product list
-					productList.appendChild(productItem);
-				});
-			})
-			.catch(error => {
-    			console.error('Error fetching data:', error);
-			});
-	</script>
+	<script src="js/common.js"></script>	
+	<script src="js/menu.js"></script>
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/jquery.data-parallax.min.js"></script>
 	<!-- <script src="js/kube.js"></script> -->

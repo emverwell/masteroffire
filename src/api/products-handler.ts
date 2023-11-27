@@ -6,17 +6,19 @@ import {
   ScanCommandInput,
 } from "@aws-sdk/client-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { region } from "../layers/api-constants";
 const logger = console;
 
 export const getProductsHandler = async (event: any): Promise<any> => {
   logger.info('getProductsHandler method initiated');
 
-  const dynamoDB = new DynamoDBClient({ region: "ap-southeast-2" });
+  const dynamoDB = new DynamoDBClient({ region: region });
 
   // Check if there is an "id" parameter in the path
   if (event.pathParameters && event.pathParameters.id) {
     // Handle /products/{id} request
     const id = event.pathParameters.id;
+    logger.info('Handle /products/{id} request');
     const params: GetItemCommandInput = {
       TableName: process.env.PRODUCTS_TABLE_NAME || "",
       Key: {

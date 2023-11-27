@@ -1,5 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { SecretsManager } from "@aws-sdk/client-secrets-manager";
+import { apiUrl } from "../layers/api-constants";
 
 const secretsManager = new SecretsManager();
 
@@ -22,22 +23,13 @@ export const callHandler = async (
   try {
     // Extract API key from the secret
 
-    if (!process.env.API_KEY) {
-      apiKey = await getSecretFromAWS("DeliVery/DVApiKey");
-      // Set the API key in the environment variable
-      process.env.API_KEY = apiKey;
-    }
+    apiKey = await getApiKey();
 
-    if (!apiKey) {
-      logger.error("Error:", "API key not found");
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "API key not found" }),
-      };
-    }
+    const parameters = event.multiValueQueryStringParameters;
+    logger.info("Parameters received:", parameters);
 
     // Extract the destination URL from the query string
-    const destinationUrl = event.queryStringParameters?.destinationUrl;
+    var destinationUrl = event.queryStringParameters?.destinationUrl;
     if (!destinationUrl) {
       logger.error("Error:", "URL not provided");
       return {
@@ -46,7 +38,12 @@ export const callHandler = async (
       };
     }
 
-    logger.info("ApiKey value", apiKey);
+    // Extract the id from the query string
+    const id = event.queryStringParameters?.id;
+    if (id) {
+      destinationUrl = `products/${id}`;
+      logger.info("id received", destinationUrl);
+    }
 
     // Modify the event to add the API key to headers
     const headers = {
@@ -55,7 +52,7 @@ export const callHandler = async (
     };
 
     // Forward the request to the actual API Gateway
-    const url = "https://api.themasteroffire.com/" + destinationUrl;
+    const url = apiUrl + destinationUrl;
     logger.info("Invoking API", url);
 
     const response = await fetch(url, {
@@ -83,6 +80,25 @@ export const callHandler = async (
     };
   }
 };
+
+async function getApiKey(): Promise<string> {
+  try {
+    if (!process.env.API_KEY) {
+      // Retrieve the secret from AWS Secrets Manager
+      apiKey = await getSecretFromAWS("DeliVery/DVApiKey");
+
+      // Set the API key in the environment variable
+      process.env.API_KEY = apiKey;
+
+      return apiKey;
+    }
+
+    return process.env.API_KEY;
+  } catch (error) {
+    console.error("Error retrieving API key:", error);
+    return "";
+  }
+}
 
 async function getSecretFromAWS(secretName: string): Promise<string> {
   return new Promise((resolve, reject) => {
