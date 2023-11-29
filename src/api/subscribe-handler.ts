@@ -5,9 +5,7 @@ import {
   PutItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
 
-import { region } from "../layers/api-constants";
-
-const dynamoDBClient = new DynamoDBClient({ region: region });
+const dynamoDBClient = new DynamoDBClient({ region: "ap-southeast-2" });
 
 export const subscribeHandler: APIGatewayProxyHandler = async (event) => {
   try {
@@ -37,7 +35,9 @@ export const subscribeHandler: APIGatewayProxyHandler = async (event) => {
     console.error("Error:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Subscription failed. Please try again." }),
+      body: JSON.stringify({
+        message: "Subscription failed. Please try again.",
+      }),
     };
   }
 };

@@ -1,6 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { SecretsManager } from "@aws-sdk/client-secrets-manager";
-import { apiUrl } from "../layers/api-constants";
 
 const secretsManager = new SecretsManager();
 
@@ -52,24 +51,29 @@ export const callHandler = async (
     };
 
     // Forward the request to the actual API Gateway
-    const url = apiUrl + destinationUrl;
-    logger.info("Invoking API", url);
+    var body = event.body;
+    if (!['GET', 'HEAD'].includes(event.httpMethod)) {
+      body = JSON.stringify(event.body);
+    }
+
+    const url = "https://api.themasteroffire.com/" + destinationUrl;
+    logger.info(`Invoking API ${url} with body ${body}`);
 
     const response = await fetch(url, {
       method: event.httpMethod,
-      body: event.body,
+      body: body,
       headers: headers,
     });
 
     // Return the response to the client
     const data = await response.json();
-    const body = JSON.stringify(data);
-    logger.info("API Call Result: ", response.status, body);
+    const response_body = JSON.stringify(data);
+    logger.info("API Call Result: ", response.status, response_body);
 
     return {
       statusCode: response.status,
       headers: response_headers, //We don't want to expose the ApiKey
-      body: body,
+      body: response_body,
     };
   } catch (error) {
     logger.error("Error:", error);
