@@ -54,17 +54,19 @@
 					<div class="col col-6">
 						<div class="vincent_single_product_cont">
 							<h1 class="vincent_single_product_title"></h1>
-							<div class="vincent_single_product_price"><span>$</span></div>
+							<div class="vincent_single_product_price"><span id="price">$</span></div>
 							<p></p>
-							<div class="vincent_single_product_cart">
-								<div class="vincent_single_product_number"><span>1</span><a
-										class="vincent_button vincent_button_background" href="product-listing.html">Add
-										to cart</a></div>
-							</div>
+							<form id="addToCartForm">
+								<label for="quantity">Quantity:</label>
+								<input type="number" class="vincent_product-quantity" id="quantity" name="quantity" min="1" value="1" required>
+								<div class="vincent_single_product_cart">
+								  <button type="submit" class="vincent_button vincent_button_background">Add to Cart</button>
+								</div>
+							</form>
 							<ul class="vincent_product_meta">
-								<li>SKU: A935-C</li>
-								<li>Category: <a href="product-listing.html"></a></li>
-								<li>Tag: <a href="product-listing.html"></a></li>
+								<li>SKU: </li>
+								<li>Category: ></a></li>
+								<li>Tag: ></a></li>
 							</ul>
 						</div>
 					</div>
@@ -82,8 +84,8 @@
 					</div>
 					<div id="tab2">
 						<ul class="vincent_tab2">
-							<li><span>Weight</span>2 kg</li>
-							<li><span>Dimensions</span>26 x 26 x 5.5 cm</li>
+							<li><span>Weight</span> kg</li>
+							<li><span>Dimensions</span> cm</li>
 						</ul>
 					</div>
 				</div>

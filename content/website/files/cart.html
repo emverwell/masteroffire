@@ -8,32 +8,76 @@
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,700" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700" rel="stylesheet">
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-	<title>Page not found - Master of Fire</title>
+	<title>Your Cart - Master of Fire</title>
 
 	<link rel="stylesheet" href="css/kube.css">
 	<link rel="stylesheet" href="css/font-awesome.css">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-G8P8Z8MD55">
+	</script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+
+		gtag('config', 'G-G8P8Z8MD55');
+	</script>
 </head>
 
-<body class="vincent_404">
+<body>
+
 	<header class="vincent_header" id="menu-header"></header>
-	<script>
-		// Using a common header
-		fetch("menu-header.html")
-			.then(response => response.text())
-			.then(data => {
-				document.getElementById("menu-header").innerHTML = data;
-			});
-	</script>
-	<div class="vincent_404_content_wrapper vincent_corners">
-		<div class="vincent_404_content_inner">
-			<p class="vincent_404_text">404</p>
-			<h1>Oops, Page Not Found!</h1>
-			<a class="vincent_button vincent_button_background" href="index.html">Back Home<i class="fa fa-angle-right"
-					aria-hidden="true"></i></a>
+
+	<div class="vincent_title_block vincent_corners">
+		<div class="vincent_inner_text">
+			<h1>Cart</h1>
 		</div>
 	</div>
+
+	<div class="vincent_container vincent_typography">
+		<div class="row gutters">
+			<div class="col col-12 vincent_content">
+				<table class="vincent_cart" id="cartTable">
+					<thead>
+					  <tr>
+						<th></th>
+						<th></th>
+						<th>Product</th>
+						<th><span>Price</span></th>
+						<th>Quantity</th>
+						<th><span>Total</span></th>
+					  </tr>
+					</thead>
+					<tbody id="cartBody">
+					  <!-- Cart items will be dynamically added here -->
+					</tbody>
+				  </table>
+				  <div class="vincent_cart_totals" id="cartTotals">
+					<h5>Cart totals</h5>
+					<table>
+					  <tbody>
+						<tr>
+						  <th>Subtotal</th>
+						  <td id="subtotal"><span>$0.00</span></td>
+						</tr>
+						<tr>
+						  <th>Total</th>
+						  <td id="total"><span>$0.00</span></td>
+						</tr>
+					  </tbody>
+					</table>
+					<a class="vincent_button vincent_button_background" href="checkout.html">Proceed to checkout</a>
+				  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="vincent_back_to_top"></div>
+	<footer id="menu-footer"></footer>
+	<script src="js/common.js"></script>
+	<script src="js/cart.js"></script>	
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/index.js"></script>
 </body>

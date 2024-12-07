@@ -167,20 +167,31 @@ export class DeliVeryStack extends cdk.Stack {
     });
 
     // DynamoDB Table for Subscribed Users
-    const subscribedEmail = new dynamoDB.Table(this, 'SubscribedEmailTable', {
-      tableName: 'subscribed_email',
+    const subscribedEmail = new dynamoDB.Table(this, "SubscribedEmailTable", {
+      tableName: "subscribed_email",
       billingMode: dynamoDB.BillingMode.PAY_PER_REQUEST, // On-demand billing
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-      partitionKey: { name: 'email', type: dynamoDB.AttributeType.STRING },
+      partitionKey: { name: "email", type: dynamoDB.AttributeType.STRING },
     });
-    
+
     // Add a global secondary index for 'is_subscribed'
     subscribedEmail.addGlobalSecondaryIndex({
-      indexName: 'is_subscribed_index',
-      partitionKey: { name: 'is_subscribed', type: dynamoDB.AttributeType.STRING },
+      indexName: "is_subscribed_index",
+      partitionKey: {
+        name: "is_subscribed",
+        type: dynamoDB.AttributeType.STRING,
+      },
       projectionType: dynamoDB.ProjectionType.ALL,
     });
-    
+
+    const cartTable = new dynamoDB.Table(this, "CartTable", {
+      tableName: "cart",
+      partitionKey: { name: "pk", type: dynamoDB.AttributeType.STRING },
+      sortKey: { name: "sk", type: dynamoDB.AttributeType.STRING },
+      billingMode: dynamoDB.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
     // Define the API Gateway
     const api = new apiGateway.RestApi(this, "DELIVeryApiGateway", {
       restApiName: "DELIVeryApiGateway",
@@ -208,10 +219,8 @@ export class DeliVeryStack extends cdk.Stack {
           "/products/{id}/GET": {
             throttlingRateLimit: 20,
             throttlingBurstLimit: 20,
-            // cacheDataEncrypted: true,
             cachingEnabled: false,
-            // cacheTtl: cdk.Duration.seconds(60),
-          },
+          },          
         },
       },
     });
@@ -248,9 +257,40 @@ export class DeliVeryStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(60),
     });
 
-    
     // Grant access to the DynamoDB table for the Lambda function
     productsTable.grantReadData(apiLambda);
+
+    // Lambda function for serverless endpoints
+    const cartLambda = new lambda.Function(this, "DELIVeryCartLambda", {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: "cart-handler.cartHandler",
+      code: lambda.Code.fromAsset("src/api"),
+      environment: {
+        CART_TABLE_NAME: cartTable.tableName,
+        USER_POOL_ID: userPool.userPoolId,
+      },
+      timeout: cdk.Duration.seconds(60),
+    });
+
+    // Grant access to the DynamoDB table for the Lambda function
+    cartTable.grantReadWriteData(cartLambda);
+
+    // Lambda function for serverless endpoints
+    const checkoutLambda = new lambda.Function(
+      this,
+      "DELIVeryCheckoutLambda",
+      {
+        runtime: lambda.Runtime.NODEJS_18_X,
+        handler: "checkout-handler.checkoutHandler",
+        code: lambda.Code.fromAsset("src/api"),
+        environment: {
+          CART_TABLE_NAME: cartTable.tableName,
+        },
+        timeout: cdk.Duration.seconds(60),
+      });
+
+    // Grant access to the DynamoDB table for the Lambda function
+    cartTable.grantReadWriteData(checkoutLambda);
 
     // Define the API Gateway resource for /products
     const productsResource = api.root.addResource("products");
@@ -286,12 +326,33 @@ export class DeliVeryStack extends cdk.Stack {
     subscribedEmail.grantReadWriteData(subscribeLambda);
 
     // Create the lambda integration for the API
-    const subscribeIntegration = new apiGateway.LambdaIntegration(subscribeLambda);
+    const subscribeIntegration = new apiGateway.LambdaIntegration(
+      subscribeLambda
+    );
 
     // Add POST Method from subscribeIntegration to API
     api.root.addResource("subscribe").addMethod("POST", subscribeIntegration);
 
-    // BBF Sort of
+    // Create the Cart Lambda integration for the API
+    const cartIntegration = new apiGateway.LambdaIntegration(cartLambda);
+    // Add a single resource for the 'cart' path
+    const cartResource = api.root.addResource("cart");
+
+    // Add PUT and POST Method from cartIntegration to API
+    cartResource.addMethod("PUT", cartIntegration);
+    cartResource.addMethod("POST", cartIntegration);
+    cartResource.addMethod("GET", cartIntegration);
+
+    // Create the Checkout Lambda integration for the API
+    const checkoutIntegration = new apiGateway.LambdaIntegration(
+      checkoutLambda
+    );
+
+    // Add POST Method from checkoutIntegration to API
+    api.root.addResource("checkout").addMethod("POST", checkoutIntegration);
+
+
+    // BFF Layer
 
     // Define the Backend API Gateway
     const apiHandler = new apiGateway.RestApi(

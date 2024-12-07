@@ -4556,6 +4556,9 @@ tfoot td{
           font-weight: 700;
           float: left;
      }
+     .vincent_product-quantity input{
+          width: 48%;
+     }
      .vincent_product-price, .vincent_product-subtotal{
           font-size: 14px;
      }

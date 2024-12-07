@@ -22,7 +22,11 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "api-constants": ["/layers/api-constants"]
+    }
   },
   "exclude": [
     "node_modules",
